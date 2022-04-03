@@ -24,7 +24,7 @@ createAutoComplete({
     root: document.querySelector('#left-autocomplete'),
     onOptionSelect(movie){
         document.querySelector('.tutorial').classList.add('is-hidden');
-        clickMovie(movie, document.querySelector('#left-summary'));
+        clickMovie(movie, document.querySelector('#left-summary'), 'left');
     }
 });
 
@@ -33,7 +33,7 @@ createAutoComplete({
     root: document.querySelector('#right-autocomplete'),
     onOptionSelect(movie){
         document.querySelector('.tutorial').classList.add('is-hidden');
-        clickMovie(movie, document.querySelector('#right-summary'));
+        clickMovie(movie, document.querySelector('#right-summary'), 'right');
     }
 });
 
@@ -41,8 +41,13 @@ createAutoComplete({
 /////////////
 
 
-
 export const movieTemplate = movieDetail => {
+    const dollars = parseInt(movieDetail.BoxOffice.replace(/\$/g, '').replace(/,/g, ''));
+    const metascore = parseInt(movieDetail.Metascore);
+    const imdbRating = parseFloat(movieDetail.imdbRating);
+    const imdbVotes = parseInt(movieDetail.imdbVotes).replace(/,/g, '');
+
+
     return `
     <article class='media'>
         <figure class='media-left'>

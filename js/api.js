@@ -25,8 +25,11 @@ export const fetchData = async searchTerm => {
     
 };
 
+let leftMovie;
+let rightMovie;
+
 //get more details from api when item is clicked
-export const clickMovie = async (movie, summaryElement) => {
+export const clickMovie = async (movie, summaryElement, side) => {
     const response = await axios.get(url, {
         params: {
             apikey: apiKey,
@@ -34,4 +37,21 @@ export const clickMovie = async (movie, summaryElement) => {
         }
     });
     summaryElement.innerHTML = movieTemplate(response.data);
-}
+    /* 
+    if (side === 'left') {
+        leftMovie = response.data;
+    }
+    else{
+        rightMovie = response.data;
+    }
+
+    if (leftMovie && rightMovie) {
+        runComparison();
+    } */
+
+};
+
+const runComparison = () => {
+    console.log('lets compare')
+    
+};
