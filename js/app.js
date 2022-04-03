@@ -1,78 +1,83 @@
-import { debounce } from "./utils.js";
-import { fetchData, clickMovie, movieTemplate} from "./api.js";
 
+import { createAutoComplete} from './autocomplete.js';
+import { fetchData, clickMovie } from './api.js';
 
-//select autocomplete input in html file
-const root = document.querySelector('.autocomplete');
-root.innerHTML = `
-    <label><b>Search for a Movie</b></label>
-    <input class="input" />
-    <div class='dropdown'>
-        <div class='dropdown-menu'>
-            <div class='dropdown-content results'>
-            </div>
-        </div>
-    </div>
-`;
-
-//query the doc for the input of the first movie
-const input = document.querySelector('.input');
-
-//create var for dropdown to show or hide
-export const dropdown = document.querySelector('.dropdown');
-
-//and the results of each element
-const resultsWrapper = document.querySelector('.results');
-
-const dropItem = document.querySelector('.dropdown-item');
-
-//create array to store id of each result
-const resultObj = {};
-
-//create function to call on timeout
-const onFirstInput = async evt => {
-    const movies = await fetchData(evt.target.value);
-    
-    //first handle what you do if no movies are returned
-    if (movies.length === 0) {
-        dropdown.classList.remove('is-active');
-    }
-    console.log(movies);
-    //clear existing items
-    resultsWrapper.innerHTML = '';
-    //display the dropdown
-    dropdown.classList.add('is-active');
-    //get movies from search term
-    for (let movie of movies) {
-        //add id of each movie to resultArray
-        resultObj[movie.Title] = movie.imdbID;
-        //create an anchor element for the dropdown item
-        const option = document.createElement('a');
+const autoCompleteConfig = {
+    renderOption(movie){
         //check that there's an image
         const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster;
-        //add a bulma class to each created element
-        option.classList.add('dropdown-item');
-        option.innerHTML = `
-            <img src="${imgSrc}"/>
-            ${movie.Title}
-        `; 
-        option.addEventListener('click', () => {
-            dropdown.classList.remove('is-active');
-            input.value = movie.Title;
-            const movieDetails = clickMovie(movie.imdbID);
-            console.log(movieDetails);
-        })
-        resultsWrapper.appendChild(option);
-    }
+        return `
+        <img src="${imgSrc}"/>
+        ${movie.Title} ${movie.Year}
+    `
+   },
+   inputValue(movie){
+       return movie.Title;
+   },
+   callData(searchTerm){
+       return fetchData(searchTerm);
+   }
 };
 
-//create listener for the input
-input.addEventListener('input', debounce(onFirstInput, 500));
-document.addEventListener('click', evt => {
-    if (!root.contains(evt.target)) {
-        dropdown.classList.remove('is-active');
+createAutoComplete({
+    ...autoCompleteConfig,
+    root: document.querySelector('#left-autocomplete'),
+    onOptionSelect(movie){
+        document.querySelector('.tutorial').classList.add('is-hidden');
+        clickMovie(movie, document.querySelector('#left-summary'));
     }
 });
 
-//console.log(resultObj);
-//clickMovie('tt0478304')
+createAutoComplete({
+    ...autoCompleteConfig,
+    root: document.querySelector('#right-autocomplete'),
+    onOptionSelect(movie){
+        document.querySelector('.tutorial').classList.add('is-hidden');
+        clickMovie(movie, document.querySelector('#right-summary'));
+    }
+});
+
+
+/////////////
+
+
+
+export const movieTemplate = movieDetail => {
+    return `
+    <article class='media'>
+        <figure class='media-left'>
+            <p class='image'>
+                <img src='${movieDetail.Poster}' />
+            </p>
+        </figure>
+        <div class='media-content'>
+            <div class='content'>
+                <h1>${movieDetail.Title}</h1>
+                <h4>${movieDetail.Genre}</h4>
+                <p>${movieDetail.Plot}</p>
+            </div>
+        </div>
+    </article>
+    <article class='notification is-primary'>
+        <p class='title'>${movieDetail.Awards}</p>
+        <p class=subtitle'>Awards</p>
+    </article>    
+    <article class='notification is-primary'>
+    <p class='title'>${movieDetail.BoxOffice}</p>
+    <p class=subtitle'>Box Office</p>
+    </article>  
+    <article class='notification is-primary'>
+    <p class='title'>${movieDetail.Metascore}</p>
+    <p class=subtitle'>Metascore</p>
+    </article>  
+    <article class='notification is-primary'>
+    <p class='title'>${movieDetail.imdbRating}</p>
+    <p class=subtitle'>IMDB Rating</p>
+    </article>  
+    <article class='notification is-primary'>
+    <p class='title'>${movieDetail.imdbVotes}</p>
+    <p class=subtitle'>IMDB</p>
+    </article>  
+    `;
+};
+
