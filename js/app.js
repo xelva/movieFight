@@ -42,10 +42,18 @@ createAutoComplete({
 
 
 export const movieTemplate = movieDetail => {
-    const dollars = parseInt(movieDetail.BoxOffice.replace(/\$/g, '').replace(/,/g, ''));
-    const metascore = parseInt(movieDetail.Metascore);
-    const imdbRating = parseFloat(movieDetail.imdbRating);
-    const imdbVotes = parseInt(movieDetail.imdbVotes).replace(/,/g, '');
+    const dollars = movieDetail.BoxOffice;
+    const parseDollars = parseInt(dollars.replace(/\$/g, '').replace(/,/g, ''));
+    const metascore = movieDetail.Metascore;
+    const parseMetascore = parseInt(metascore);
+    const imdbRating = movieDetail.imdbRating;
+    const parseImdbRating = parseFloat(imdbRating);
+    const imdbVotes = movieDetail.imdbVotes;
+    const parseImdbVotes = parseInt(imdbVotes);
+    const awards = movieDetail.Awards;
+    const awardsArray = awards.split(' ');
+    
+    const awardsFin = awardsFunc(awardsArray);
 
 
     return `
@@ -63,26 +71,39 @@ export const movieTemplate = movieDetail => {
             </div>
         </div>
     </article>
-    <article class='notification is-primary'>
+    <article data-value=${awardsFin} class='notification is-primary'>
         <p class='title'>${movieDetail.Awards}</p>
         <p class=subtitle'>Awards</p>
     </article>    
-    <article class='notification is-primary'>
+    <article data-value=${parseDollars} class='notification is-primary'>
     <p class='title'>${movieDetail.BoxOffice}</p>
     <p class=subtitle'>Box Office</p>
     </article>  
-    <article class='notification is-primary'>
+    <article data-value=${parseMetascore} class='notification is-primary'>
     <p class='title'>${movieDetail.Metascore}</p>
     <p class=subtitle'>Metascore</p>
     </article>  
-    <article class='notification is-primary'>
+    <article data-value=${parseImdbRating} class='notification is-primary'>
     <p class='title'>${movieDetail.imdbRating}</p>
     <p class=subtitle'>IMDB Rating</p>
     </article>  
-    <article class='notification is-primary'>
+    <article data-value=${parseImdbVotes} class='notification is-primary'>
     <p class='title'>${movieDetail.imdbVotes}</p>
     <p class=subtitle'>IMDB</p>
     </article>  
     `;
 };
 
+const awardsFunc = awardsArray => {
+    let count = 0;
+    for (let i = 0; i < awardsArray.length; i++) {
+        console.log(awardsArray[i]);
+            let parse = parseInt(awardsArray[i])
+            if (isNaN(parse)) {
+                count + 0;
+            } else {
+                count += parseInt(awardsArray[i]);
+            }
+    }
+    return count;
+}; 

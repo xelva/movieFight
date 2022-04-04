@@ -25,8 +25,8 @@ export const fetchData = async searchTerm => {
     
 };
 
-let leftMovie;
-let rightMovie;
+let leftMovie = false;
+let rightMovie = false;
 
 //get more details from api when item is clicked
 export const clickMovie = async (movie, summaryElement, side) => {
@@ -37,21 +37,37 @@ export const clickMovie = async (movie, summaryElement, side) => {
         }
     });
     summaryElement.innerHTML = movieTemplate(response.data);
-    /* 
+    
     if (side === 'left') {
-        leftMovie = response.data;
+        leftMovie = true;
     }
     else{
-        rightMovie = response.data;
+        rightMovie = true;
     }
 
     if (leftMovie && rightMovie) {
         runComparison();
-    } */
+    }
 
 };
 
 const runComparison = () => {
-    console.log('lets compare')
+    const leftSideStats = document.querySelectorAll('#left-summary .notification');
+    const rightSideStats = document.querySelectorAll('#right-summary .notification');
+    
+    leftSideStats.forEach((leftStat, index) => {
+        const rightStat = rightSideStats[index];
+        
+        const leftSideValue = parseInt(leftStat.dataset.value);
+        const rightSideValue = parseInt(rightStat.dataset.value);
+
+        if (rightSideValue > leftSideValue) {
+            leftStat.classList.remove('is-primary');
+            leftStat.classList.add('is-warning');
+        } else {
+            rightStat.classList.remove('is-primary');
+            rightStat.classList.add('is-warning');
+        };
+    });
     
 };
